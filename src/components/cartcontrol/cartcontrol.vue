@@ -1,9 +1,9 @@
 
 <template>
   <div class="cartcontrol">
-      <div class="cart-decrease" v-show="food.count>0" @click="decreaseCart($event)"><img src="./../../../static/jh.png" alt=""></div>
+      <div class="cart-decrease" v-show="food.count>0" @click.stop="decreaseCart($event)"><img src="./../../../static/jh.png" alt=""></div>
       <div class="cart-count" v-show="food.count>0">{{food.count}}</div>
-      <div class="cart-add" @click="addCart($event)"><img src="./../../../static/ah.png" alt=""></div>
+      <div class="cart-add" @click.stop="addCart($event)"><img src="./../../../static/ah.png" alt=""></div>
   </div>
 </template>
 

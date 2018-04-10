@@ -1,43 +1,46 @@
 <!--  -->
 <template>
-  <div class="goods">
-    <div class="menu-wrapper" ref="menuWrapper">
-      <ul>
-        <li v-for="(good,index) in goods" class="menu-item" @click="selectMenu(index,$event)" :class="{'current':currentIndex===index}">
-          <span class="text border-one-px"><span class="icon" v-show="good.type>0" :class="classMap[good.type]"></span>{{good.name}}</span>
-        </li>
-      </ul>
+  <div>
+    <div class="goods">
+      <div class="menu-wrapper" ref="menuWrapper">
+        <ul>
+          <li v-for="(good,index) in goods" class="menu-item" @click="selectMenu(index,$event)" :class="{'current':currentIndex===index}">
+            <span class="text border-one-px"><span class="icon" v-show="good.type>0" :class="classMap[good.type]"></span>{{good.name}}</span>
+          </li>
+        </ul>
+      </div>
+      <div class="foods-wrapper" ref="foodsWrapper">
+        <ul>
+          <li v-for="(good,index) in goods" class="food-list food-list-hook">
+            <h1 class="title">{{good.name}}</h1>
+            <ul>
+              <li @click="selectFood(food,$event)" v-for="food in good.foods" class="food-item border-one-px">
+                <div class="icon">
+                  <img :src="food.icon" alt="">
+                </div>
+                <div class="content">
+                  <h2 class="name">{{food.name}}</h2>
+                  <p class="desc">{{food.description}}</p>
+                  <div class="extra">
+                    <span class="count">月售{{food.sellCount}}份</span>
+                    <span>好评率{{food.rating}}%</span>
+                  </div>
+                  <div class="price">
+                    <span class="now">￥{{food.price}}</span>
+                    <span v-show="food.oldPrice" class="old">￥{{food.oldPrice}}</span>
+                  </div>
+                  <div class="cartcontrol-wrapper">
+                    <cartControl :food="food"></cartControl>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+      <shopcart :select-foods="selectFoods" :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"></shopcart>
     </div>
-    <div class="foods-wrapper" ref="foodsWrapper">
-      <ul>
-        <li v-for="(good,index) in goods" class="food-list food-list-hook">
-          <h1 class="title">{{good.name}}</h1>
-          <ul>
-            <li v-for="food in good.foods" class="food-item border-one-px">
-              <div class="icon">
-                <img :src="food.icon" alt="">
-              </div>
-              <div class="content">
-                <h2 class="name">{{food.name}}</h2>
-                <p class="desc">{{food.description}}</p>
-                <div class="extra">
-                  <span class="count">月售{{food.sellCount}}份</span>
-                  <span>好评率{{food.rating}}%</span>
-                </div>
-                <div class="price">
-                  <span class="now">￥{{food.price}}</span>
-                  <span v-show="food.oldPrice" class="old">￥{{food.oldPrice}}</span>
-                </div>
-                <div class="cartcontrol-wrapper">
-                  <cartControl :food="food"></cartControl>
-                </div>
-              </div>
-            </li>
-          </ul>
-        </li>
-      </ul>
-    </div>
-    <shopcart :select-foods="selectFoods" :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"></shopcart>
+    <food :food="selectedFood" ref="food"></food>
   </div>
 </template>
 
@@ -45,12 +48,14 @@
 import BScroll from 'better-scroll';
 import shopcart from 'components/shopcart/shopcart';
 import cartControl from 'components/cartcontrol/cartcontrol';
+import food from 'components/food/food';
 export default {
   data (){
     return {
       goods: [],
       listHeight: [],
-      scrollY: 0
+      scrollY: 0,
+      selectedFood: {}
     }
   },
   props: {
@@ -126,11 +131,19 @@ export default {
       this.foosScroll.scrollToElement(el,300);
       console.log(index);
 
+    },
+    selectFood (food,event) {
+      if(!event._constructed) {
+        return;
+      }
+      this.selectedFood = food;
+      this.$refs.food.show();
     }
   },
   components: {
     shopcart,
-    cartControl
+    cartControl,
+    food
   }
 };
 </script>
