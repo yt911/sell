@@ -285,4 +285,5 @@ export default {
     background-image: url("special_3@3x.png");
   }
 }
+xxxx
 </style>
