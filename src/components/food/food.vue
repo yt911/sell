@@ -27,6 +27,10 @@
               <div class="text" v-show="food.info">{{food.info}}</div>
           </div>
           <split></split>
+          <div class="rating">
+              <h1 class="title">商品评价</h1>
+              <ratingSelect  @toggleContent="togglecontent"  @select="selectRating"  :ratings="food.ratings" :select-type="selectType" :only-content="onlyContent" :desc="desc"></ratingSelect>
+          </div>
       </div>
   </div>
 </template>
@@ -36,6 +40,10 @@ import Vue from 'vue';
 import BScroll from 'better-scroll';
 import cartControl from 'components/cartcontrol/cartcontrol';
 import split from 'components/split/split';
+import ratingSelect from 'components/ratingselect/ratingselect';
+const POSITIVE = 0;
+const NEGATIVE = 1;
+const ALL = 2;
 export default {
     props: {
         food: {
@@ -44,12 +52,21 @@ export default {
     },
     data () {
         return {
-            showFlag: false
+            showFlag: false,
+            selectType: ALL,
+            onlyContent: false,
+            desc: {
+                all: '全部',
+                positive: '推荐',
+                negative: '吐槽'
+            }
         }
     },
     methods: {
         show () {
             this.showFlag = true;
+            this.selectType = ALL;
+            this.onlyContent = false;
             this.$nextTick(() => {
                 if(!this.BScroll){
                     this.scroll = new BScroll(this.$refs.food,{
@@ -70,11 +87,18 @@ export default {
             }
             Vue.set(this.food,'count',1);
 
+        },
+        selectRating (type) {
+            this.selectType = type;
+        },
+        togglecontent (onlyContent) {
+            this.onlyContent = onlyContent;
         }
     },
     components: {
         cartControl,
-        split
+        split,
+        ratingSelect
     }
 }
 
@@ -186,5 +210,15 @@ export default {
     color: rgb(77,85,93);
     line-height: 24px;
     margin-bottom: 6px;
+}
+.rating{
+    padding-top: 18px;
+}
+.rating .title{
+    font-size: 14px;
+    color: rgb(7,17,27);
+    line-height: 20px;
+    margin-left: 18px;
+
 }
 </style>
