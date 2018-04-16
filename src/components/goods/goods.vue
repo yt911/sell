@@ -4,17 +4,17 @@
     <div class="goods">
       <div class="menu-wrapper" ref="menuWrapper">
         <ul>
-          <li v-for="(good,index) in goods" class="menu-item" @click="selectMenu(index,$event)" :class="{'current':currentIndex===index}">
+          <li v-for="(good,index) in goods" :key="good.id" class="menu-item" @click="selectMenu(index,$event)" :class="{'current':currentIndex===index}">
             <span class="text border-one-px"><span class="icon" v-show="good.type>0" :class="classMap[good.type]"></span>{{good.name}}</span>
           </li>
         </ul>
       </div>
       <div class="foods-wrapper" ref="foodsWrapper">
         <ul>
-          <li v-for="(good,index) in goods" class="food-list food-list-hook">
+          <li v-for="good in goods" :key="good.id" class="food-list food-list-hook">
             <h1 class="title">{{good.name}}</h1>
             <ul>
-              <li @click="selectFood(food,$event)" v-for="food in good.foods" class="food-item border-one-px">
+              <li @click="selectFood(food,$event)" v-for="food in good.foods" :key="food.id" class="food-item border-one-px">
                 <div class="icon">
                   <img :src="food.icon" alt="">
                 </div>
@@ -50,7 +50,7 @@ import shopcart from "components/shopcart/shopcart";
 import cartControl from "components/cartcontrol/cartcontrol";
 import food from "components/food/food";
 export default {
-  data() {
+  data () {
     return {
       goods: [],
       listHeight: [],
@@ -62,7 +62,7 @@ export default {
     seller: {}
   },
   computed: {
-    currentIndex() {
+    currentIndex () {
       for (let i = 0; i < this.listHeight.length; i++) {
         let height1 = this.listHeight[i];
         let height2 = this.listHeight[i + 1];
@@ -72,7 +72,7 @@ export default {
       }
       return 0;
     },
-    selectFoods() {
+    selectFoods () {
       let foods = [];
       this.goods.forEach(good => {
         good.foods.forEach(food => {
@@ -84,7 +84,7 @@ export default {
       return foods;
     }
   },
-  created() {
+  created () {
     this.classMap = ["decrease", "discount", "special", "invoice", "guarantee"];
     this.$http.get("/api/goods").then(response => {
       response = response.body;
@@ -98,7 +98,7 @@ export default {
     });
   },
   methods: {
-    _initScroll() {
+    _initScroll () {
       this.menuScroll = new BScroll(this.$refs.menuWrapper, {
         click: true
       });
@@ -110,7 +110,7 @@ export default {
         this.scrollY = Math.abs(Math.round(pos.y));
       });
     },
-    _canculateHeight() {
+    _canculateHeight () {
       let foodList = this.$refs.foodsWrapper.getElementsByClassName(
         "food-list-hook"
       );
@@ -122,7 +122,7 @@ export default {
         this.listHeight.push(height);
       }
     },
-    selectMenu(index, event) {
+    selectMenu (index, event) {
       if (!event._constructed) {
         return;
       }
@@ -133,7 +133,7 @@ export default {
       this.foosScroll.scrollToElement(el, 300);
       console.log(index);
     },
-    selectFood(food, event) {
+    selectFood (food, event) {
       if (!event._constructed) {
         return;
       }

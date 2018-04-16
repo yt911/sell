@@ -24,7 +24,7 @@
                 </div>
                 <div class="list-content" ref="listContent">
                     <ul>
-                        <li class="food border-one-px" v-for="food in selectFoods">
+                        <li class="food border-one-px" v-for="food in selectFoods" :key="food.id">
                             <span class="name">{{food.name}}</span>
                             <div class="price">
                                 <span>￥{{food.price*food.count}}</span>
@@ -56,38 +56,41 @@ export default {
     },
     selectFoods: {
       type: Array,
-      default() {
+      default () {
         return [];
       }
     }
   },
-  data() {
+  data () {
     return {
       fold: true
     };
   },
   computed: {
-    totalPrice() {
+    totalPrice () {
       let total = 0;
       this.selectFoods.forEach(food => {
         total += food.price * food.count;
       });
       return total;
     },
-    totalCount() {
+    totalCount () {
       let count = 0;
       this.selectFoods.forEach(food => {
         count += food.count;
       });
       return count;
     },
-    choosePic() {
-      let url;
-      return (url = "(totalCount>0)"
-        ? "../static/cart1.png"
-        : "../static/cart2.png");
+    choosePic () {
+      let urladd = '';
+      if (this.totalCount > 0) {
+        urladd = "../static/cart1.png";
+      } else {
+        urladd = "../static/cart2.png";
+      }
+      return urladd;
     },
-    payDesc() {
+    payDesc () {
       if (this.totalPrice === 0) {
         return `￥${this.minPrice}起送`;
       } else if (this.totalPrice < this.minPrice) {
@@ -97,27 +100,28 @@ export default {
         return "去结算";
       }
     },
-    payClass() {
+    payClass () {
       if (this.totalPrice < this.minPrice) {
         return "no-enough";
       } else {
         return "enough";
       }
     },
-    listShow() {
-      if (!this.totalCount) {
-        this.fold = true;
+    listShow () {
+      let _this = this;
+      if (!_this.totalCount) {
+        _this.fold = true;
         return false;
       }
       let show = !this.fold;
       if (show) {
         this.$nextTick(() => {
-          if (!this.scroll) {
-            this.scroll = new BScroll(this.$refs.listContent, {
+          if (!_this.scroll) {
+            _this.scroll = new BScroll(this.$refs.listContent, {
               click: true
             });
           } else {
-            this.scroll.refresh();
+            _this.scroll.refresh();
           }
         });
       }
@@ -125,21 +129,21 @@ export default {
     }
   },
   methods: {
-    toggleList() {
+    toggleList () {
       if (!this.totalCount) {
         return;
       }
       this.fold = !this.fold;
     },
-    empty() {
+    empty () {
       this.selectFoods.forEach(food => {
         food.count = 0;
       });
     },
-    hideList() {
+    hideList () {
       this.fold = true;
     },
-    pay() {
+    pay () {
       if (this.totalPrice < this.minPrice) {
         return;
       }

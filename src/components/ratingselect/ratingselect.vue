@@ -9,7 +9,7 @@
      <div class="switch">
          <span @click="toggleContent($event)"><img :src="ifContentPic" alt=""></span>
          <span class="text">只看有内容的评价</span>
-     </div> 
+     </div>
   </div>
 </template>
 
@@ -21,13 +21,13 @@ export default {
   props: {
     ratings: {
       type: Array,
-      default() {
+      default () {
         return [];
       }
     },
     desc: {
       type: Object,
-      default() {
+      default () {
         return {
           all: "全部",
           positive: "满意",
@@ -44,42 +44,42 @@ export default {
       default: ALL
     }
   },
-  data() {
+  data () {
     return {
       content: this.onlyContent
     };
   },
   computed: {
-    ifContentPic() {
+    ifContentPic () {
       return this.onlyContent ? "../static/ls.png" : "../static/hs.png";
     },
-    _onlyContent() {
+    _onlyContent () {
       if (this.onlyContent) {
         return false;
       } else {
         return true;
       }
     },
-    positive() {
+    positive () {
       return this.ratings.filter(rating => {
         return rating.rateType === POSITIVE;
       });
     },
-    negative() {
+    negative () {
       return this.ratings.filter(rating => {
         return rating.rateType === NEGATIVE;
       });
     }
   },
   methods: {
-    toggleContent(event) {
+    toggleContent (event) {
       if (!event._constructed) {
         return;
       }
 
       this.$emit("toggleContent", this._onlyContent);
     },
-    select(type, event) {
+    select (type, event) {
       if (!event._constructed) {
         return;
       }

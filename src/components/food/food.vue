@@ -32,7 +32,7 @@
               <ratingSelect  @toggleContent="togglecontent"  @select="selectRating"  :ratings="food.ratings" :select-type="selectType" :only-content="onlyContent" :desc="desc"></ratingSelect>
               <div class="rating-wrapper">
                   <ul v-show="food.ratings && food.ratings.length">
-                      <li v-show="needShow(rating.rateType,rating.text)" v-for="rating in food.ratings" class="rating-item border-one-px">
+                      <li v-show="needShow(rating.rateType,rating.text)" v-for="rating in food.ratings" :key="rating.id" class="rating-item border-one-px">
                           <div class="user">
                               <span class="name">{{rating.username}}</span>
                               <img :src="rating.avatar" alt="" class="avatar" width="12" height="12">
@@ -51,78 +51,78 @@
 </template>
 
 <script>
-import Vue from "vue";
-import BScroll from "better-scroll";
-import cartControl from "components/cartcontrol/cartcontrol";
-import split from "components/split/split";
-import ratingSelect from "components/ratingselect/ratingselect";
-const POSITIVE = 0;
-const NEGATIVE = 1;
-const ALL = 2;
+import Vue from 'vue'
+import BScroll from 'better-scroll'
+import cartControl from 'components/cartcontrol/cartcontrol'
+import split from 'components/split/split'
+import ratingSelect from 'components/ratingselect/ratingselect'
+// const POSITIVE = 0
+// const NEGATIVE = 1
+const ALL = 2
 export default {
   props: {
     food: {
       type: Object
     }
   },
-  data() {
+  data () {
     return {
       showFlag: false,
       selectType: ALL,
       onlyContent: false,
       desc: {
-        all: "全部",
-        positive: "推荐",
-        negative: "吐槽"
+        all: '全部',
+        positive: '推荐',
+        negative: '吐槽'
       }
-    };
+    }
   },
   computed: {},
   methods: {
-    show() {
-      this.showFlag = true;
-      this.selectType = ALL;
-      this.onlyContent = false;
+    show () {
+      this.showFlag = true
+      this.selectType = ALL
+      this.onlyContent = false
       this.$nextTick(() => {
         if (!this.BScroll) {
           this.scroll = new BScroll(this.$refs.food, {
             click: true
-          });
+          })
         } else {
-          this.scroll.refresh();
+          this.scroll.refresh()
         }
-      });
+      })
     },
-    hide() {
-      this.showFlag = false;
+    hide () {
+      this.showFlag = false
     },
-    addFirst(event) {
+    addFirst (event) {
       if (!event._constructed) {
-        return;
+        return
       }
-      Vue.set(this.food, "count", 1);
+      Vue.set(this.food, 'count', 1)
     },
-    selectRating(type) {
-      this.selectType = type;
+    selectRating (type) {
+      this.selectType = type
       this.$nextTick(() => {
-        this.scroll.refresh();
-      });
+        this.scroll.refresh()
+      })
     },
-    togglecontent(onlyContent) {
-      this.onlyContent = onlyContent;
+    togglecontent (onlyContent) {
+      this.onlyContent = onlyContent
       this.$nextTick(() => {
-        this.scroll.refresh();
-      });
+        this.scroll.refresh()
+      })
     },
-    needShow (type,text) {
-        if(this.onlyContent && !text){
-            return false;
-        }
-        if(this.selectType === ALL){
-            return true
-        }else {
-            return type === this.selectType;
-        }
+    needShow (type, text) {
+      if (this.onlyContent && !text) {
+        return false
+      }
+      if (this.selectType === ALL) {
+        return true
+      } else {
+        return type === this.selectType
+      }
     }
   },
   components: {
@@ -130,7 +130,7 @@ export default {
     split,
     ratingSelect
   }
-};
+}
 </script>
 <style scoped>
 .food {
@@ -275,24 +275,24 @@ export default {
   border-radius: 50%;
 }
 .time {
-    line-height: 12px;
-    font-size: 10px;
-    color: rgb(147, 153, 159);
-    margin-right: 6px;
+  line-height: 12px;
+  font-size: 10px;
+  color: rgb(147, 153, 159);
+  margin-right: 6px;
 }
-.rating-item .text{
-    line-height: 16px;
-    font-size: 12px;
-    color: rgb(7, 17, 27);
-    margin-top: 8px;
+.rating-item .text {
+  line-height: 16px;
+  font-size: 12px;
+  color: rgb(7, 17, 27);
+  margin-top: 8px;
 }
-.rating-item .text .icon{
-    margin-right: 4px;
-    width: 12px;
+.rating-item .text .icon {
+  margin-right: 4px;
+  width: 12px;
 }
-.no-rating{
-    padding: 16px 0;
-    font-size: 12px;
-    color: rgb(7, 17, 27);
+.no-rating {
+  padding: 16px 0;
+  font-size: 12px;
+  color: rgb(7, 17, 27);
 }
 </style>

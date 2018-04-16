@@ -34,7 +34,7 @@
 import star from 'components/star/star';
 import split from 'components/split/split';
 export default {
-  props:{
+  props: {
     seller: {
       type: Object
     }
@@ -42,7 +42,7 @@ export default {
   data () {
     return {};
   },
-  components:{
+  components: {
     star,
     split
   }

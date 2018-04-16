@@ -42,7 +42,7 @@
               <div class="line"></div>
             </div>
             <ul v-if="seller.supports" class="supports">
-              <li v-for="(support,index) in seller.supports" class="support-item">
+              <li v-for="(support,index) in seller.supports" :key="support.id" class="support-item">
                 <span class="icon" :class="classMap[seller.supports[index].type]"></span>
                 <span class="text">{{seller.supports[index].description}}</span>
               </li>
@@ -80,7 +80,7 @@ export default {
     showDetail () {
       this.detailShow = true;
     },
-    hideDetail (){
+    hideDetail () {
       this.detailShow = false;
     }
   },
@@ -226,7 +226,7 @@ export default {
   width: 100%;
   height: 100%;
   overflow: auto;
-  background: rgba(7, 17, 27, 0.8);  
+  background: rgba(7, 17, 27, 0.8);
   transition:all .5s;
   -webkit-backdrop-filter:blur(5px);
 }
