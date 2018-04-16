@@ -22,12 +22,12 @@
 import header from "./components/header/header.vue";
 import goods from "./components/goods/goods.vue";
 export default {
-  data () {
+  data() {
     return {
       seller: {}
     };
   },
-  created () {
+  created() {
     this.$http.get("/api/seller").then(response => {
       response = response.body;
       if (response.errno === 0) {

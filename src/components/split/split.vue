@@ -4,16 +4,14 @@
 </template>
 
 <script>
-export default {
-}
-
+export default {};
 </script>
 <style>
-.split{
-    width: 100%;
-    height: 16px;
-    border-top: 1px solid rgb(7,17,27,0.1);
-    border-bottom: 1px solid rgb(7,17,27,0.1);
-    background: #f3f5f7;
+.split {
+  width: 100%;
+  height: 16px;
+  border-top: 1px solid rgb(7, 17, 27, 0.1);
+  border-bottom: 1px solid rgb(7, 17, 27, 0.1);
+  background: #f3f5f7;
 }
 </style>
