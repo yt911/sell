@@ -1,6 +1,6 @@
 <!--  -->
 <template>
-  <div class="ratings">
+  <div class="ratings" ref="ratingsBox">
     <div class="ratings-content">
       <div class="overview">
         <div class="overview-left">
@@ -26,13 +26,38 @@
         </div>
       </div>
       <split></split>
+      <ratingSelect  @toggleContent="togglecontent"  @select="selectRating"  :ratings="ratings" :select-type="selectType" :only-content="onlyContent" :desc="desc"></ratingSelect>
+      <div class="rating-wrapper">
+        <ul>
+          <li v-for="rating in ratings" :key="rating.id" class="rating-item border-one-px" v-show="needShow(rating.rateType,rating.text)">
+            <div class="avatar">
+              <img :src="rating.avatar" alt="" width="28" height="28">
+            </div>
+            <div class="content">
+              <h1 class="name">{{rating.username}}</h1>
+              <div class="star-wrapper">
+                <star :size="24" :score="rating.score"></star>
+                <span class="delivery" v-show="rating.deliveryTime">{{rating.deliveryTime}}</span>
+              </div>
+              <p class="text">{{rating.text}}</p>
+              <div class="recommend">
+                <span class="icon"><img v-show="rating.rateType==0" src="./../../../static/dzu.png" alt=""><img v-show="!rating.rateType==0" src="./../../../static/dzut.png" alt=""></span>
+                <span v-show="rating.recommend && rating.recommend.length" v-for="item in rating.recommend" :key="item.id" class="item">{{item}}</span>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+import BScroll from 'better-scroll';
 import star from 'components/star/star';
 import split from 'components/split/split';
+import ratingSelect from 'components/ratingselect/ratingselect';
+const ALL = 2;
 export default {
   props: {
     seller: {
@@ -40,11 +65,61 @@ export default {
     }
   },
   data () {
-    return {};
+    return {
+      ratings: [],
+      selectType: ALL,
+      onlyContent: false,
+      desc: {
+        all: '全部',
+        positive: '推荐',
+        negative: '吐槽'
+      }
+    };
+  },
+  created () {
+    this.$http.get('/api/ratings').then((reponse) => {
+      reponse = reponse.body;
+      if (reponse.errno === 0) {
+        this.ratings = reponse.data;
+        this.$nextTick(() => {
+          this._isScroll();
+        })
+      }
+    })
+  },
+  methods: {
+    _isScroll () {
+      this.ratingsBox = new BScroll(this.$refs.ratingsBox, {
+        click: true
+      });
+    },
+    selectRating (type) {
+      this.selectType = type
+      this.$nextTick(() => {
+        this.ratingsBox.refresh()
+      });
+    },
+    togglecontent (onlyContent) {
+      this.onlyContent = onlyContent
+      this.$nextTick(() => {
+        this.ratingsBox.refresh()
+      });
+    },
+    needShow (type, text) {
+      if (this.onlyContent && !text) {
+        return false
+      }
+      if (this.selectType === ALL) {
+        return true
+      } else {
+        return type === this.selectType
+      }
+    }
   },
   components: {
     star,
-    split
+    split,
+    ratingSelect
   }
 };
 </script>
@@ -121,6 +196,61 @@ export default {
   color: rgb(147,152,159);
   line-height: 18px;
   margin-left: 12px;
+}
+.rating-wrapper{
+  padding: 0 18px;
+}
+.rating-item{
+  display: flex;
+  padding: 18px 0;
+  color: rgb(7,17,27);
+}
+.rating-item .avatar{
+  flex: 0 0 28px;
+  margin-right: 12px;
+}
+.rating-item .avatar img{
+  border-radius: 50%;
+}
+.content{
+  flex: 1;
+  position: relative;
+}
+.content .name{
+  line-height: 12px;
+  font-size: 10px;
+  color: rgb(7,17,27);
+  margin-bottom: 4px;
+}
+.content .star-wrapper{
+  margin-bottom: 6px;
+  font-size: 0;
+}
+.content .star-wrapper .star{
+  margin-right: 6px;
+  display: inline-block;
+}
+.content .star-wrapper .delivery{
+  font-size: 10px;
+  color: rgb(147,152,159);
+  line-height: 12px;
+}
+.content .text{
+  line-height: 18px;
+  font-size: 12px;
+  color: rgb(7,17,27);
+  margin-bottom: 8px;
+}
+.content .recommend{
+  line-height: 16px;
+}
+.recommend .item{
+  display: inline-block;
+  margin: 0 8px 4px 0;
+  border: 1px solid rgba(7,17,27,0.1);
+  color: rgb(147,152,159);
+  font-size: 12px;
+  padding: 0 6px;
 }
 @media only screen and (max-width:320px){
   .overview-left{
