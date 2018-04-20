@@ -227,14 +227,13 @@ export default {
   height: 100%;
   overflow: auto;
   background: rgba(7, 17, 27, 0.8);
-  transition:all .5s;
   -webkit-backdrop-filter:blur(5px);
 }
 .fade-enter-active,.fade-leave-active {
-  opacity: 1;
+  transition: opacity 2s
 }
 
-.fade-enter,.fade-leave{
+.fade-enter,.fade-leave-active{
   opacity: 0;
 }
 .detail-wrapper {
