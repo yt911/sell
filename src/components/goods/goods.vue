@@ -45,7 +45,7 @@
 </template>
 
 <script>
-import BScroll from "better-scroll";
+import BScroll from 'better-scroll';
 import shopcart from "components/shopcart/shopcart";
 import cartControl from "components/cartcontrol/cartcontrol";
 import food from "components/food/food";

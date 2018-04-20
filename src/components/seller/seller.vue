@@ -1,54 +1,64 @@
 <!--  -->
 <template>
-  <div class="seller" ref="sellerBox">
-    <div class="content-top">
-      <div class="inner-top border-one-px">
-        <h1 class="title">{{seller.name}}</h1>
-        <div class="star-wrapper">
-          <star :size="36" :score="seller.score"></star>
-          <span class="ratingCount">({{seller.ratingCount}})</span>
-          <span class="sellCount">{{seller.sellCount}}</span>
+  <div class="seller" ref="seller">
+    <div class="content-wrapper">
+      <div class="content-top">
+        <div class="inner-top border-one-px">
+          <h1 class="title">{{seller.name}}</h1>
+          <div class="star-wrapper">
+            <star :size="36" :score="seller.score"></star>
+            <span class="ratingCount">({{seller.ratingCount}})</span>
+            <span class="sellCount">{{seller.sellCount}}</span>
+          </div>
+          <div class="collect" @click="toggleFavorite">
+            <img v-show="!this.favorite" src="../../../static/sck.png" alt="">
+            <img v-show="this.favorite" src="../../../static/scm.png" alt="">
+            <p>{{this.favoriteText}}</p>
+          </div>
+        </div>
+        <div class="inner-bottom">
+          <div class="item">
+            <div class="text">起送价</div>
+            <div class="num-box"><span class="num">{{seller.minPrice}}</span>元</div>
+          </div>
+          <div class="item">
+            <div class="text">商家配送</div>
+            <div class="num-box"><span class="num">{{seller.deliveryPrice}}</span>元</div>
+          </div>
+          <div class="item">
+            <div class="text">平均配送时间</div>
+            <div class="num-box"><span class="num">{{seller.deliveryTime}}</span>分钟</div>
+          </div>
         </div>
       </div>
-      <div class="inner-bottom">
-        <div class="item">
-          <div class="text">起送价</div>
-          <div class="num-box"><span class="num">{{seller.minPrice}}</span>元</div>
-        </div>
-        <div class="item">
-          <div class="text">商家配送</div>
-          <div class="num-box"><span class="num">{{seller.deliveryPrice}}</span>元</div>
-        </div>
-        <div class="item">
-          <div class="text">平均配送时间</div>
-          <div class="num-box"><span class="num">{{seller.deliveryTime}}</span>分钟</div>
+      <split></split>
+      <div class="bulletin-wrapper">
+        <h1 class="title">公告与活动</h1>
+        <p>{{seller.bulletin}}</p>
+        <ul v-if="seller.supports" class="supports">
+          <li v-for="(support,index) in seller.supports" :key="support.id" class="support-item">
+            <span class="icon" :class="classMap[seller.supports[index].type]"></span>
+            <span class="text">{{seller.supports[index].description}}</span>
+          </li>
+        </ul>
+      </div>
+      <split></split>
+      <div class="pics" v-show="seller.pics && seller.pics.length">
+        <h1 class="title">商家实景</h1>
+        <div class="pic-wrapper" ref="picWrapper">
+          <ul class="pic-ul" ref="picUl">
+            <li class="pic-item" v-for="pic in seller.pics" :key="pic.id">
+              <img :src="pic" alt="" width="120" height="90">
+            </li>
+          </ul>
         </div>
       </div>
-    </div>
-    <split></split>
-    <div class="bulletin-wrapper">
-      <h1 class="title">公告与活动</h1>
-      <p>{{seller.bulletin}}</p>
-      <ul v-if="seller.supports" class="supports">
-        <li v-for="(support,index) in seller.supports" :key="support.id" class="support-item">
-          <span class="icon" :class="classMap[seller.supports[index].type]"></span>
-          <span class="text">{{seller.supports[index].description}}</span>
-        </li>
-      </ul>
-    </div>
-    <split></split>
-    <div class="pics" v-show="seller.pics && seller.pics.length">
-      <h1 class="title">商家实景</h1>
-      <ul>
-        <li class="pic-item" v-for="pic in seller.pics" :key="pic.id">
-          <img :src="pic" alt="">
-        </li>
-      </ul>
-    </div>
-    <div class="info-wrapper">
-      <ul>
-        <li class="info-item" v-for="info in seller.infos" :key="info.id">{{info}}</li>
-      </ul>
+      <div class="info-wrapper">
+        <h1 class="title">商家信息</h1>
+        <ul>
+          <li class="info-item" v-for="info in seller.infos" :key="info.id">{{info}}</li>
+        </ul>
+      </div>
     </div>
   </div>
 </template>
@@ -59,17 +69,70 @@ import star from 'components/star/star';
 import split from 'components/split/split';
 export default {
   props: {
-    seller: {}
+    seller: {
+      type: Object
+    }
+  },
+  data () {
+    return {
+      favorite: true
+    }
+  },
+  computed: {
+    favoriteText () {
+      return this.favorite ? '已收藏' : '收藏';
+    }
   },
   created () {
     this.classMap = ["decrease", "discount", "special", "invoice", "guarantee"];
   },
+  watch: {
+    'seller' () {
+      this.$nextTick(() => {
+        this._initScroll();
+        this._initPicScroll();
+      })
+    }
+  },
   mounted () {
     this.$nextTick(() => {
-      this.sellerBox = new BScroll(this.$refs.sellerBox, {
-        click: true
-      });
-    });
+      this._initScroll();
+      this._initPicScroll();
+    })
+  },
+  methods: {
+    _initScroll () {
+      if (!this.scroll) {
+        this.scroll = new BScroll(this.$refs.seller, {
+          click: true
+        });
+      } else {
+        this.scroll.refresh();
+      }
+    },
+    _initPicScroll () {
+      if (this.seller.pics) {
+        let picWidth = 120;
+        let margin = 6;
+        let width = (picWidth + margin) * this.seller.pics.length - margin;
+        this.$refs.picUl.style.width = width + 'px';
+        if (!this.picScroll) {
+          this.picScroll = new BScroll(this.$refs.picWrapper, {
+            scrollX: true,
+            click: true,
+            eventPassthrough: 'vertical'
+          });
+        } else {
+          this.picScroll.refresh();
+        }
+      }
+    },
+    toggleFavorite (event) {
+      if (!event._constructed) {
+        return;
+      }
+      this.favorite = !this.favorite;
+    }
   },
   components: {
     star,
@@ -85,6 +148,7 @@ export default {
   bottom: 0;
   width: 100%;
   overflow: hidden;
+  z-index: 30;
 }
 .content-top{
   margin: 0 18px;
@@ -186,14 +250,46 @@ h1{
   font-size: 12px;
   line-height: 16px;
 }
-.info-wrapper ul{
-  display: flex;
+.pics{
+  padding: 18px;
 }
-.info-wrapper ul li{
-  flex: 1;
-}
-.info-wrapper ul li img{
+.pic-wrapper{
   width: 100%;
+  overflow: hidden;
+}
+.pic-ul{
+  font-size: 0;
+}
+.pic-item{
+  display: inline-block;
+  margin-left: 6px;
+  width: 120px;
+  height: 90px;
+}
+.pic-item:first-child{
+  margin-left: 0;
+}
+.info-wrapper{
+  padding: 18px;
+}
+.info-item{
+  padding: 16px 12px;
+  font-size: 12px;
+  color: rgb(7,17,27);
+  line-height: 16px;
+  border-top: 1px solid rgba(7,17,27,0.1);
+}
+.collect{
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 60px;
+  text-align: center;
+}
+.collect p{
+  margin-top: 1px;
+  font-size: 10px;
+  color: rgb(77,85,93);
 }
 @media (-webkit-min-device-pixel-ratio: 3), (min-device-pixel-ratio: 3) {
   .supports .decrease{
